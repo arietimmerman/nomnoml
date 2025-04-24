@@ -1,5 +1,6 @@
 import { Config, NodeLayouter, Style, TextStyle, Visual, Visualizer } from './domain'
 import { LayoutedNode, LayoutedPart } from './layouter'
+import { Graphics } from './Graphics'
 import { sum, last, range } from './util'
 import { Vec } from './vector'
 
@@ -56,6 +57,11 @@ export const styles: { [key: string]: Style } = {
   table:       buildStyle({ visual:'table' }, { center:true, bold:true }),
   transceiver: buildStyle({ visual:'transceiver' }, {}),
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
+  component: buildStyle(
+    { visual: 'component' },
+    { center: true },
+    { center: true }
+  ),
 }
 
 function offsetBox(config: Config, clas: LayoutedNode, offset: Vec) {
@@ -295,6 +301,23 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
     clas.parts = clas.parts.filter((e) => !isRowBreak(e))
   },
   transceiver: box,
+  component: function offsetBox(config: Config, clas: LayoutedNode) {
+    clas.width = Math.max(160, ...clas.parts.map((e) => e.width ?? 0))
+    clas.height = Math.max(90,sum(clas.parts, (e) => e.height ?? 0 ?? 0))
+    clas.dividers = []
+    let y = 29
+    for (const comp of clas.parts) {
+      comp.x = 0 + 0
+      comp.y = y + 0
+      comp.width = clas.width
+      y += comp.height ?? 0 ?? 0
+      if (comp != last(clas.parts))
+        clas.dividers.push([
+          { x: 0, y: y },
+          { x: clas.width, y: y },
+        ])
+    }
+  },
 }
 
 export const visualizers: { [key in Visual]: Visualizer } = {
@@ -463,4 +486,41 @@ export const visualizers: { [key in Visual]: Visualizer } = {
       { x: x, y: y + node.height / 2 },
     ]).fillAndStroke()
   },
+  component: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle
+    const rx = 3; // rounded corner radius
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    
+    // Draw the binder icon in the top right corner
+    // The icon is static and doesn't scale with the component
+    // Scaled down to 60% of original size
+    const iconWidth = 58 * 0.6; // ~35px
+    const iconHeight = 38 * 0.6; // ~23px
+    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
+    const iconY = y + 12; // 12px padding from the top edge
+    
+    // Draw the main (outer) rectangle of the binder
+    g.fillStyle('#bfffff');
+    g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
+    
+    // Draw the "tabs" that stick out of the spine
+    // Top tab
+    g.fillStyle('#bfffff');
+    g.rect(iconX - 10 * 0.6, iconY + 5 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+    // Bottom tab
+    g.rect(iconX - 10 * 0.6, iconY + 21 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+  }
+}
+
+function handleEvent(e: MouseEvent | TouchEvent): void {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (e instanceof MouseEvent) {
+    // Handle mouse events
+    // ... existing mouse event handling code ...
+  } else if (e instanceof TouchEvent) {
+    // Handle touch events
+    // ... existing touch event handling code ...
+  }
 }

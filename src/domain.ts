@@ -44,6 +44,7 @@ export interface NodeLayouter {
 export type Visual =
   | 'actor'
   | 'class'
+  | 'component'
   | 'database'
   | 'ellipse'
   | 'end'

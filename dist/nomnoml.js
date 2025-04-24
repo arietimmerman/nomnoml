@@ -965,7 +965,7 @@
                 lineWidth: +d.lineWidth || 3,
                 padding: +d.padding || 8,
                 spacing: +d.spacing || 40,
-                stroke: d.stroke || '#33322E',
+                stroke: d.stroke || '#000000',
                 title: d.title || '',
                 zoom: +d.zoom || 1,
                 acyclicer: d.acyclicer === 'greedy' ? 'greedy' : undefined,
