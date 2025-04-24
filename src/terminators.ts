@@ -29,6 +29,7 @@ function terminatorSize(id: string): number {
   if (id === '(' || id === ')') return 11
   if (id === '(o' || id === 'o)') return 11
   if (id === '>o' || id === 'o<') return 15
+  if (id === '|>' || id === '<|') return 10
   return 0
 }
 
@@ -59,6 +60,8 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
       drawArrow(dir, size * 0.75, empty, add(end, mult(dir, size * 10)))
       drawStem(dir, size, 8, end)
       drawBall(dir, size, 8, end)
+    } else if (id === '|>' || id === '<|') {
+      drawClosedTriangle(dir, size, end)
     }
   }
 
@@ -103,5 +106,18 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
     g.fillStyle(isOpen ? config.stroke : config.fill[0])
     g.circuit(arrow).fillAndStroke()
     g.restore()
+  }
+
+  function drawClosedTriangle(nv: Vec, size: number, end: Vec) {
+    const x = (s: number) => add(end, mult(nv, s * size))
+    const y = (s: number) => mult(rot(nv), s * size)
+    const arrow = [
+      add(x(10), y(4)),
+      x(10),
+      add(x(10), y(-4)),
+      end,
+    ]
+    g.fillStyle(config.stroke)
+    g.circuit(arrow).fillAndStroke()
   }
 }

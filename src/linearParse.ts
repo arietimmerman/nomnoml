@@ -111,9 +111,9 @@ export function linearParse(source: string): Ast {
       else startLabel += pop()
       if (index === lastIndex) throw new Error('Infinite loop')
     }
-    const assoc1 = consumeOneOf('(o', '(', 'o<', 'o', '+', '<:', '<', '')
+    const assoc1 = consumeOneOf('(o', '(', 'o<', 'o', '+', '<:', '<', '<|', '')
     const assoc2 = consumeOneOf('--', '-/-', '-')
-    const assoc3 = consumeOneOf('o)', 'o', '>o', '>', ')', '+', ':>', '')
+    const assoc3 = consumeOneOf('o)', 'o', '>o', '>', ')', '+', ':>', '|>', '')
     const endLabel = consumeOptional(/[^\[]/)
     const target = parseNode()
     return {
