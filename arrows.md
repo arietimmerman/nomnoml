@@ -1,7 +1,7 @@
 specialization: -:>
 composition: +-   of  +->
 aggregation: o-   of  o->
-TODO: assignment: .--.
+assignment: .--.
 realization: --:>
 triggering: -|>
 serving: ->
