@@ -62,6 +62,8 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
       drawBall(dir, size, 8, end)
     } else if (id === '|>' || id === '<|') {
       drawClosedTriangle(dir, size, end)
+    } else if (id === '.') {
+      drawDot(dir, size, end)
     }
   }
 
@@ -119,5 +121,11 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
     ]
     g.fillStyle(config.stroke)
     g.circuit(arrow).fillAndStroke()
+  }
+
+  function drawDot(nv: Vec, size: number, end: Vec) {
+    const center = add(end, mult(nv, size * 4))
+    g.fillStyle(config.stroke)
+    g.circle(center, size * 2).fillAndStroke()
   }
 }
