@@ -42,8 +42,6 @@ export const styles: { [key: string]: Style } = {
   hidden:      buildStyle({ visual:'hidden' }, {}),
   input:       buildStyle({ visual:'input' }, { center:true }),
   instance:    buildStyle({ visual:'class' }, { center:true, underline:true }),
-  interface:   buildStyle({ visual:'interface' }, { center:true, bold:true }, { center: true }),
-  process:     buildStyle({ visual:'process' }, { center:true, bold:true }, { center: true }),
   label:       buildStyle({ visual:'none' }, { center:true }),
   lollipop:    buildStyle({ visual:'lollipop' }, { center:true }),
   note:        buildStyle({ visual:'note' }, {}),
@@ -59,38 +57,40 @@ export const styles: { [key: string]: Style } = {
   table:       buildStyle({ visual:'table' }, { center:true, bold:true }),
   transceiver: buildStyle({ visual:'transceiver' }, {}),
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
+  interface:   buildStyle({ visual:'interface', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
+  process:     buildStyle({ visual:'process', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
   collaboration: buildStyle(
-    { visual: 'collaboration' },
+    { visual: 'collaboration', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   component: buildStyle(
-    { visual: 'component' },
+    { visual: 'component', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   function: buildStyle(
-    { visual: 'function' },
+    { visual: 'function', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   interaction: buildStyle(
-    { visual: 'interaction' },
+    { visual: 'interaction', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   event: buildStyle(
-    { visual: 'event' },
+    { visual: 'event', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   service: buildStyle(
-    { visual: 'service' },
+    { visual: 'service', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
   data: buildStyle(
-    { visual: 'data' },
+    { visual: 'data', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
@@ -550,7 +550,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
   },
   process: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Draw the main rounded rectangle (same as component)
-    const rx = 3;
+    const rx = 10;
     g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
     
     // Draw the process icon (arrow)
@@ -578,7 +578,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the arrow icon
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circuit(points).fillAndStroke();
   },
   interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -593,7 +593,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw circle for interface
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circle({x: iconX + iconWidth/2, y: iconY + iconHeight/2}, iconWidth/2 - 2).fillAndStroke();
     
     // Draw a line extending to the left (the interface connection)
@@ -617,7 +617,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const circleRadius = iconHeight/2 - 2;
     
     // Draw two overlapping circles
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circle({x: iconX + circleRadius + 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
     g.circle({x: iconX + iconWidth - circleRadius - 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
   },
@@ -649,7 +649,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the polygon icon
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circuit(points).fillAndStroke();
   },
   interaction: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -668,7 +668,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const centerY = iconY + iconHeight/2;
     
     // Draw left half-circle
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     
     // Create points for the left half-circle
     const leftCenterX = iconX + radius;
@@ -729,7 +729,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Create points for the event icon
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     
     // Start with the notched rectangle part
     const notchDepth = iconHeight * 0.25;
@@ -773,7 +773,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the pill shape
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.roundRect(iconX, iconY, iconWidth, iconHeight, iconHeight/2).fillAndStroke();
   },
   data: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -788,7 +788,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the main rectangle of the icon
-    g.fillStyle(config.fill[0]);
+    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
     // Draw the header separator line about 1/3 from the top

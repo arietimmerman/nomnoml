@@ -165,7 +165,19 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
 
     const part = c as LayoutedPart
     part.width = Math.max(textSize.width, graphWidth) + 2 * config.padding
-    part.height = textSize.height + graphHeight + config.padding
+    
+    // Check if this compartment has child nodes
+    const hasChildren = c.nodes && c.nodes.length > 0
+    
+    // For compartments with children, add extra padding to ensure text stays within the box
+    if (hasChildren) {
+      // Add extra padding at the bottom for text
+      const extraPadding = config.padding * 3
+      part.height = textSize.height + graphHeight + config.padding + extraPadding
+    } else {
+      part.height = textSize.height + graphHeight + config.padding
+    }
+    
     part.offset = { x: config.padding - left, y: config.padding - top }
   }
 

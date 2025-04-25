@@ -18,31 +18,74 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     g.save()
     g.translate(compartment.offset!.x, compartment.offset!.y)
     g.fillStyle(color || config.stroke)
-    for (let i = 0; i < compartment.lines.length; i++) {
-      const text = compartment.lines[i]
-      g.textAlign(style.center ? 'center' : 'left')
-      const x = style.center ? compartment.width! / 2 - config.padding : 0
-      let y = (0.5 + (i + 0.5) * config.leading) * config.fontSize
-      if (text) {
-        g.fillText(text, x, y)
-      }
-      if (style.underline) {
-        const w = g.measureText(text).width
-        y += Math.round(config.fontSize * 0.2) + 0.5
-        if (style.center) {
-          g.path([
-            { x: x - w / 2, y: y },
-            { x: x + w / 2, y: y },
-          ]).stroke()
-        } else {
-          g.path([
-            { x: x, y: y },
-            { x: x + w, y: y },
-          ]).stroke()
+    
+    // Check if this compartment has child nodes
+    const hasChildren = compartment.nodes && compartment.nodes.length > 0
+    
+    // Render text based on whether it has children or not
+    if (hasChildren) {
+      // For compartments with children, render text at the bottom
+      const lineHeight = config.fontSize * config.leading
+      // Add extra padding at the bottom to ensure text stays within the box
+      const bottomPadding = config.padding * 2
+      
+      for (let i = 0; i < compartment.lines.length; i++) {
+        const text = compartment.lines[i]
+        g.textAlign(style.center ? 'center' : 'left')
+        const x = style.center ? compartment.width! / 2 - config.padding : 0
+        // Position text higher within the box by using a larger bottom padding
+        let y = compartment.height! - bottomPadding - (compartment.lines.length - 1 - i) * lineHeight
+        
+        if (text) {
+          g.fillText(text, x, y-40)
         }
-        g.lineWidth(config.lineWidth)
+        if (style.underline) {
+          const w = g.measureText(text).width
+          y += Math.round(config.fontSize * 0.2) + 0.5
+          if (style.center) {
+            g.path([
+              { x: x - w / 2, y: y },
+              { x: x + w / 2, y: y },
+            ]).stroke()
+          } else {
+            g.path([
+              { x: x, y: y },
+              { x: x + w, y: y },
+            ]).stroke()
+          }
+          g.lineWidth(config.lineWidth)
+        }
+      }
+    } else {
+      // For compartments without children, render text at the top (original behavior)
+      for (let i = 0; i < compartment.lines.length; i++) {
+        const text = compartment.lines[i]
+        g.textAlign(style.center ? 'center' : 'left')
+        const x = style.center ? compartment.width! / 2 - config.padding : 0
+        let y = (0.5 + (i + 0.5) * config.leading) * config.fontSize
+        
+        if (text) {
+          g.fillText(text, x, y)
+        }
+        if (style.underline) {
+          const w = g.measureText(text).width
+          y += Math.round(config.fontSize * 0.2) + 0.5
+          if (style.center) {
+            g.path([
+              { x: x - w / 2, y: y },
+              { x: x + w / 2, y: y },
+            ]).stroke()
+          } else {
+            g.path([
+              { x: x, y: y },
+              { x: x + w, y: y },
+            ]).stroke()
+          }
+          g.lineWidth(config.lineWidth)
+        }
       }
     }
+    
     g.save()
     g.translate(config.gutter, config.gutter)
     for (const r of compartment.assocs) renderRelation(r)
