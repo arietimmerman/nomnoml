@@ -73,6 +73,9 @@ export type Visual =
   | 'event'
   | 'service'
   | 'data'
+  | 'application'
+  | 'business'
+  | 'technology'
 
 export interface TextStyle {
   bold: boolean

@@ -1,0 +1,9 @@
+#direction: right
+
+[<application:interface> SAML]
+[<application:component> Auth Service]
+[<business:interface> Payment]
+[<business:component> Payment Service]
+
+[<application:interface> SAML]->[<application:component> Auth Service]
+[<business:interface> Payment]->[<business:component> Payment Service] 

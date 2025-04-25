@@ -97,7 +97,19 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
   function renderNode(node: LayoutedNode, level: number) {
     const x = node.x - node.width / 2
     const y = node.y - node.height / 2
-    const style = config.styles[node.type] || styles.class
+    
+    // Get the base style for the node type
+    let style = config.styles[node.type] || styles.class
+    
+    // If the node has a stylePrefix attribute, apply that style's fill color
+    if (node.attr && node.attr.stylePrefix && config.styles[node.attr.stylePrefix]) {
+      const prefixStyle = config.styles[node.attr.stylePrefix]
+      // Create a new style object with the prefix style's fill color
+      style = {
+        ...style,
+        fill: prefixStyle.fill
+      }
+    }
 
     g.save()
     g.setData('name', node.id)

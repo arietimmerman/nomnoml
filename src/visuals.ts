@@ -94,6 +94,21 @@ export const styles: { [key: string]: Style } = {
     { center: true },
     { center: true }
   ),
+  application: buildStyle(
+    { visual: 'component', fill: '#dae8fc' },
+    { center: true, bold: true },
+    { center: true }
+  ),
+  business: buildStyle(
+    { visual: 'component', fill: '#fff2cc' },
+    { center: true, bold: true },
+    { center: true }
+  ),
+  technology: buildStyle(
+    { visual: 'component', fill: '#afffaf' },
+    { center: true, bold: true },
+    { center: true }
+  ),
 }
 
 function offsetBox(config: Config, clas: LayoutedNode, offset: Vec) {
@@ -360,7 +375,19 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
   interaction: archimate,
   event: archimate,
   service: archimate,
-  data: archimate
+  data: archimate,
+  application: function (config: Config, clas: LayoutedNode) {
+    // Use the same layouter as component
+    layouters.component(config, clas);
+  },
+  business: function (config: Config, clas: LayoutedNode) {
+    // Use the same layouter as component
+    layouters.component(config, clas);
+  },
+  technology: function (config: Config, clas: LayoutedNode) {
+    // Use the same layouter as component
+    layouters.component(config, clas);
+  }
 }
 
 export const visualizers: { [key in Visual]: Visualizer } = {
@@ -797,6 +824,14 @@ export const visualizers: { [key in Visual]: Visualizer } = {
       { x: iconX, y: iconY + headerHeight },
       { x: iconX + iconWidth, y: iconY + headerHeight }
     ]).stroke();
+  },
+  application: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Use the same visualizer as component but with the application style
+    visualizers.component(node, x, y, config, g);
+  },
+  business: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Use the same visualizer as component but with the business style
+    visualizers.component(node, x, y, config, g);
   }
 }
 

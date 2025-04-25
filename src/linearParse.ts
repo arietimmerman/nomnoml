@@ -132,10 +132,26 @@ export function linearParse(source: string): Ast {
     index++
     let attr: Attrs = {}
     let type = 'class'
+    let stylePrefix = undefined
+    
     if (source[index] == '<') {
       const meta = parseMeta()
       attr = meta.attr
       type = meta.type ?? 'class'
+      
+      // Check for prefix in the type (e.g., "application:interface" or "business:interface")
+      const colonIndex = type.indexOf(':')
+      if (colonIndex > 0) {
+        const prefix = type.substring(0, colonIndex)
+        if (prefix === 'application' || prefix === 'business' || prefix === 'technology') {
+          // Extract the visual type from after the colon
+          const visualType = type.substring(colonIndex + 1)
+          // Store the prefix for styling
+          stylePrefix = prefix
+          // Use the visual type for the node type
+          type = visualType
+        }
+      }
     }
     const parts = [parsePart()]
     while (source[index] == '|') {
@@ -147,7 +163,14 @@ export function linearParse(source: string): Ast {
     if (source[index] == ']') {
       pop()
       discard(/ /)
-      return { parts: parts, attr, id: attr.id ?? parts[0].lines[0], type }
+      const node = { parts: parts, attr, id: attr.id ?? parts[0].lines[0], type }
+      
+      // If we have a style prefix, add it to the node's attributes
+      if (stylePrefix) {
+        node.attr.stylePrefix = stylePrefix
+      }
+      
+      return node
     }
     error(']', source[index])
   }
@@ -171,7 +194,7 @@ export function linearParse(source: string): Ast {
 
   function parseMeta(): { type: string; attr: Attrs } {
     index++
-    const type = consume(/[a-zA-Z0-9_]/)
+    const type = consume(/[a-zA-Z0-9_:]/)
     const char = pop()
     if (char == '>') return { type, attr: {} }
     if (char != ' ') error([' ', '>'], char)

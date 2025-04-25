@@ -2,7 +2,7 @@ import { Ranker } from 'graphre/decl/types'
 import { Config, Style, Visual } from './domain'
 import { linearParse } from './linearParse'
 import { last } from './util'
-import { styles } from './visuals'
+import { styles, buildStyle } from './visuals'
 
 export { ParseError } from './linearParse'
 
@@ -90,6 +90,20 @@ export function parse(source: string): ParsedDiagram {
       const styleDef = d[key]
       userStyles[key.substring(1)] = parseCustomStyle(styleDef)
     }
+    
+    // Add styles for application and business prefixes
+    userStyles['application'] = buildStyle(
+      { visual: 'component', fill: '#dae8fc' }, // Light blue color
+      { center: true, bold: true },
+      { center: true }
+    )
+    
+    userStyles['business'] = buildStyle(
+      { visual: 'component', fill: '#fff2cc' }, // Light yellow color
+      { center: true, bold: true },
+      { center: true }
+    )
+    
     return {
       arrowSize: +d.arrowSize || 1,
       bendSize: +d.bendSize || 0.3,
