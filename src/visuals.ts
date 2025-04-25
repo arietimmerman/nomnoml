@@ -541,7 +541,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the component icon (rectangle with two tabs)
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
     // Draw the tabs
@@ -578,7 +578,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the arrow icon
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.circuit(points).fillAndStroke();
   },
   interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -593,7 +593,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw circle for interface
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.circle({x: iconX + iconWidth/2, y: iconY + iconHeight/2}, iconWidth/2 - 2).fillAndStroke();
     
     // Draw a line extending to the left (the interface connection)
@@ -617,7 +617,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const circleRadius = iconHeight/2 - 2;
     
     // Draw two overlapping circles
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.circle({x: iconX + circleRadius + 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
     g.circle({x: iconX + iconWidth - circleRadius - 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
   },
@@ -649,7 +649,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the polygon icon
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.circuit(points).fillAndStroke();
   },
   interaction: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -668,7 +668,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const centerY = iconY + iconHeight/2;
     
     // Draw left half-circle
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     
     // Create points for the left half-circle
     const leftCenterX = iconX + radius;
@@ -729,7 +729,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Create points for the event icon
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     
     // Start with the notched rectangle part
     const notchDepth = iconHeight * 0.25;
@@ -773,7 +773,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the pill shape
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.roundRect(iconX, iconY, iconWidth, iconHeight, iconHeight/2).fillAndStroke();
   },
   data: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -788,7 +788,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the main rectangle of the icon
-    g.fillStyle('#bfffff');
+    g.fillStyle(config.fill[0]);
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
     // Draw the header separator line about 1/3 from the top
