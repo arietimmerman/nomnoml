@@ -42,6 +42,8 @@ export const styles: { [key: string]: Style } = {
   hidden:      buildStyle({ visual:'hidden' }, {}),
   input:       buildStyle({ visual:'input' }, { center:true }),
   instance:    buildStyle({ visual:'class' }, { center:true, underline:true }),
+  interface:   buildStyle({ visual:'interface' }, { center:true, bold:true }, { center: true }),
+  process:     buildStyle({ visual:'process' }, { center:true, bold:true }, { center: true }),
   label:       buildStyle({ visual:'none' }, { center:true }),
   lollipop:    buildStyle({ visual:'lollipop' }, { center:true }),
   note:        buildStyle({ visual:'note' }, {}),
@@ -83,6 +85,24 @@ function offsetBox(config: Config, clas: LayoutedNode, offset: Vec) {
 }
 function box(config: Config, clas: LayoutedNode) {
   offsetBox(config, clas, { x: 0, y: 0 })
+}
+
+function archimate(config: Config, clas: LayoutedNode) {
+  clas.width = Math.max(160, ...clas.parts.map((e) => e.width ?? 0))
+  clas.height = Math.max(90,sum(clas.parts, (e) => e.height ?? 0 ?? 0))
+  clas.dividers = []
+  let y = 29
+  for (const comp of clas.parts) {
+    comp.x = 0 + 0
+    comp.y = y + 0
+    comp.width = clas.width
+    y += comp.height ?? 0 ?? 0
+    if (comp != last(clas.parts))
+      clas.dividers.push([
+        { x: 0, y: y },
+        { x: clas.width, y: y },
+      ])
+  }
 }
 
 function icon(config: Config, clas: LayoutedNode) {
@@ -189,6 +209,7 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
     clas.height = 1
   },
   input: box,
+  
   lollipop: labelledIcon,
   none: box,
   note: box,
@@ -301,23 +322,9 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
     clas.parts = clas.parts.filter((e) => !isRowBreak(e))
   },
   transceiver: box,
-  component: function offsetBox(config: Config, clas: LayoutedNode) {
-    clas.width = Math.max(160, ...clas.parts.map((e) => e.width ?? 0))
-    clas.height = Math.max(90,sum(clas.parts, (e) => e.height ?? 0 ?? 0))
-    clas.dividers = []
-    let y = 29
-    for (const comp of clas.parts) {
-      comp.x = 0 + 0
-      comp.y = y + 0
-      comp.width = clas.width
-      y += comp.height ?? 0 ?? 0
-      if (comp != last(clas.parts))
-        clas.dividers.push([
-          { x: 0, y: y },
-          { x: clas.width, y: y },
-        ])
-    }
-  },
+  component: archimate,
+  interface: archimate,
+  process: archimate,
 }
 
 export const visualizers: { [key in Visual]: Visualizer } = {
@@ -509,6 +516,70 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     g.rect(iconX - 10 * 0.6, iconY + 5 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
     // Bottom tab
     g.rect(iconX - 10 * 0.6, iconY + 21 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+  },
+  process: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle
+    const rx = 3; // rounded corner radius
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    
+    // Draw the binder icon in the top right corner
+    // The icon is static and doesn't scale with the component
+    // Scaled down to 60% of original size
+    const iconWidth = 58 * 0.6; // ~35px
+    const iconHeight = 38 * 0.6; // ~23px
+    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
+    const iconY = y + 12; // 12px padding from the top edge
+    
+    // Draw the main (outer) rectangle of the binder
+    g.fillStyle('#bfffff');
+    g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
+    
+    // Draw the "tabs" that stick out of the spine
+    // Top tab
+    g.fillStyle('#bfffff');
+    g.rect(iconX - 10 * 0.6, iconY + 5 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+    // Bottom tab
+    g.rect(iconX - 10 * 0.6, iconY + 21 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+  },
+  interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle
+    const rx = 3; // rounded corner radius
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    
+    // Draw the interface icon in the top right corner
+    // The icon is static and doesn't scale with the component
+    // Scaled down to 60% of original size
+    const iconWidth = 58 * 0.6; // ~35px
+    const iconHeight = 38 * 0.6; // ~23px
+    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
+    const iconY = y + 12; // 12px padding from the top edge
+    
+    // Draw the main (outer) rectangle of the interface
+    g.fillStyle('#bfffff');
+    g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
+    
+    // Draw the "plug" or "socket" icon
+    // This is a simplified representation of an interface
+    const plugWidth = 20 * 0.6;
+    const plugHeight = 30 * 0.6;
+    const plugX = iconX + (iconWidth - plugWidth) / 2;
+    const plugY = iconY + (iconHeight - plugHeight) / 2;
+    
+    // Draw the plug body
+    g.fillStyle('#bfffff');
+    g.rect(plugX, plugY, plugWidth, plugHeight).fillAndStroke();
+    
+    // Draw the plug pins (3 horizontal lines)
+    const pinWidth = plugWidth * 0.8;
+    const pinHeight = 2 * 0.6;
+    const pinX = plugX + (plugWidth - pinWidth) / 2;
+    const pinSpacing = plugHeight / 4;
+    
+    for (let i = 1; i <= 3; i++) {
+      const pinY = plugY + i * pinSpacing - pinHeight / 2;
+      g.fillStyle('#000000');
+      g.rect(pinX, pinY, pinWidth, pinHeight).fillAndStroke();
+    }
   }
 }
 
