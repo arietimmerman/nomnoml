@@ -10,7 +10,7 @@ Created by [Daniel Kallin](https://github.com/skanaar) with help from a group of
 
 ## Library
 
-The [nomnoml](https://www.nomnoml.com) javascript library can render diagrams on your web page. The only dependency is [graphre](https://github.com/skanaar/graphre). Install nomnoml using either _npm_ or good old script inclusion.
+The [nomnoml](https://www.nomnoml.com) javascript library can render diagrams on your web page. The only dependency is [dagre](https://github.com/dagrejs/dagre). Install nomnoml using either _npm_ or good old script inclusion.
 
 ## SVG output in NodeJS
 
@@ -35,7 +35,7 @@ document.querySelector('svg').onclick = function (e) {
 ## HTML Canvas rendering target
 
 ```html
-<script src="//unpkg.com/graphre/dist/graphre.js"></script>
+<script src="//unpkg.com/dagre/dist/dagre.min.js"></script>
 <script src="//unpkg.com/nomnoml/dist/nomnoml.js"></script>
 
 <canvas id="target-canvas"></canvas>

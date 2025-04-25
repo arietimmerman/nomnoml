@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.8.0] - 2024-03-21
+
+- Switch from Graphre to Dagre for graph layout
+- Update dependencies
+
 ## [1.7.0] - 2024-12-14
 
 - Add `data-compartment` attribute to SVG output for identifying the compartment index when building interactivity.

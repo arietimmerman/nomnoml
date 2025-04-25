@@ -9,9 +9,9 @@ export default {
     file: 'dist/nomnoml.js',
     format: 'umd',
     name: 'nomnoml',
-    globals: { graphre: 'graphre' },
+    globals: { dagre: 'dagre' },
   },
-  external: ['graphre'],
+  external: ['dagre'],
   plugins: [
     ignore(['fs', 'path', 'ignore']),
     typescript({

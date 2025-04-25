@@ -59,8 +59,38 @@ export const styles: { [key: string]: Style } = {
   table:       buildStyle({ visual:'table' }, { center:true, bold:true }),
   transceiver: buildStyle({ visual:'transceiver' }, {}),
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
+  collaboration: buildStyle(
+    { visual: 'collaboration' },
+    { center: true },
+    { center: true }
+  ),
   component: buildStyle(
     { visual: 'component' },
+    { center: true },
+    { center: true }
+  ),
+  function: buildStyle(
+    { visual: 'function' },
+    { center: true },
+    { center: true }
+  ),
+  interaction: buildStyle(
+    { visual: 'interaction' },
+    { center: true },
+    { center: true }
+  ),
+  event: buildStyle(
+    { visual: 'event' },
+    { center: true },
+    { center: true }
+  ),
+  service: buildStyle(
+    { visual: 'service' },
+    { center: true },
+    { center: true }
+  ),
+  data: buildStyle(
+    { visual: 'data' },
     { center: true },
     { center: true }
   ),
@@ -325,6 +355,12 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
   component: archimate,
   interface: archimate,
   process: archimate,
+  collaboration: archimate,
+  function: archimate,
+  interaction: archimate,
+  event: archimate,
+  service: archimate,
+  data: archimate
 }
 
 export const visualizers: { [key in Visual]: Visualizer } = {
@@ -495,91 +531,272 @@ export const visualizers: { [key in Visual]: Visualizer } = {
   },
   component: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Draw the main rounded rectangle
-    const rx = 3; // rounded corner radius
-    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    const rx = 0; // rounded corner radius
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
     
-    // Draw the binder icon in the top right corner
-    // The icon is static and doesn't scale with the component
-    // Scaled down to 60% of original size
-    const iconWidth = 58 * 0.6; // ~35px
-    const iconHeight = 38 * 0.6; // ~23px
-    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
-    const iconY = y + 12; // 12px padding from the top edge
+    // Draw the component icon in the top right corner
+    const iconWidth = 35;
+    const iconHeight = 23;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
     
-    // Draw the main (outer) rectangle of the binder
+    // Draw the component icon (rectangle with two tabs)
     g.fillStyle('#bfffff');
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
-    // Draw the "tabs" that stick out of the spine
-    // Top tab
-    g.fillStyle('#bfffff');
-    g.rect(iconX - 10 * 0.6, iconY + 5 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
-    // Bottom tab
-    g.rect(iconX - 10 * 0.6, iconY + 21 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+    // Draw the tabs
+    g.rect(iconX - 6, iconY + 3, 12, 7).fillAndStroke();
+    g.rect(iconX - 6, iconY + 13, 12, 7).fillAndStroke();
   },
   process: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
-    // Draw the main rounded rectangle
-    const rx = 3; // rounded corner radius
-    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
     
-    // Draw the binder icon in the top right corner
-    // The icon is static and doesn't scale with the component
-    // Scaled down to 60% of original size
-    const iconWidth = 58 * 0.6; // ~35px
-    const iconHeight = 38 * 0.6; // ~23px
-    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
-    const iconY = y + 12; // 12px padding from the top edge
+    // Draw the process icon (arrow)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
     
-    // Draw the main (outer) rectangle of the binder
+    // Create points for the arrow
+    const points = [
+      // Shaft start (left)
+      { x: iconX, y: iconY + iconHeight * 0.4 },
+      // Shaft end (right)
+      { x: iconX + iconWidth * 0.6, y: iconY + iconHeight * 0.4 },
+      // Head upper point
+      { x: iconX + iconWidth * 0.6, y: iconY + iconHeight * 0.15 },
+      // Arrow tip
+      { x: iconX + iconWidth, y: iconY + iconHeight * 0.5 },
+      // Head lower point
+      { x: iconX + iconWidth * 0.6, y: iconY + iconHeight * 0.85 },
+      // Shaft end (right)
+      { x: iconX + iconWidth * 0.6, y: iconY + iconHeight * 0.6 },
+      // Shaft end (left)
+      { x: iconX, y: iconY + iconHeight * 0.6 }
+    ];
+    
+    // Draw the arrow icon
     g.fillStyle('#bfffff');
-    g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
-    
-    // Draw the "tabs" that stick out of the spine
-    // Top tab
-    g.fillStyle('#bfffff');
-    g.rect(iconX - 10 * 0.6, iconY + 5 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
-    // Bottom tab
-    g.rect(iconX - 10 * 0.6, iconY + 21 * 0.6, 20 * 0.6, 12 * 0.6).fillAndStroke();
+    g.circuit(points).fillAndStroke();
   },
   interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
-    // Draw the main rounded rectangle
-    const rx = 3; // rounded corner radius
-    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke()
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
     
-    // Draw the interface icon in the top right corner
-    // The icon is static and doesn't scale with the component
-    // Scaled down to 60% of original size
-    const iconWidth = 58 * 0.6; // ~35px
-    const iconHeight = 38 * 0.6; // ~23px
-    const iconX = x + node.width - iconWidth - 10; // 10px padding from the right edge
-    const iconY = y + 12; // 12px padding from the top edge
+    // Draw the interface icon (circle with line/socket)
+    const iconWidth = 25;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
     
-    // Draw the main (outer) rectangle of the interface
+    // Draw circle for interface
+    g.fillStyle('#bfffff');
+    g.circle({x: iconX + iconWidth/2, y: iconY + iconHeight/2}, iconWidth/2 - 2).fillAndStroke();
+    
+    // Draw a line extending to the left (the interface connection)
+    g.path([
+      {x: iconX, y: iconY + iconHeight/2},
+      {x: iconX + iconWidth/2 - 2, y: iconY + iconHeight/2}
+    ]).stroke();
+  },
+  collaboration: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the collaboration icon (two overlapping circles)
+    const iconWidth = 30;
+    const iconHeight = 20;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Calculate dimensions for the two circles
+    const circleRadius = iconHeight/2 - 2;
+    
+    // Draw two overlapping circles
+    g.fillStyle('#bfffff');
+    g.circle({x: iconX + circleRadius + 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
+    g.circle({x: iconX + iconWidth - circleRadius - 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
+  },
+  function: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 10;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the function icon (small hexagon with top peak and bottom notch)
+    const iconWidth = 30;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Create points for the small function icon
+    const points = [
+      // Left slope start
+      { x: iconX, y: iconY + iconHeight * 0.33 },
+      // Top peak
+      { x: iconX + iconWidth * 0.5, y: iconY },
+      // Right slope end
+      { x: iconX + iconWidth, y: iconY + iconHeight * 0.33 },
+      // Right-hand bottom
+      { x: iconX + iconWidth, y: iconY + iconHeight * 0.97 },
+      // Bottom notch
+      { x: iconX + iconWidth * 0.5, y: iconY + iconHeight * 0.66 },
+      // Left-hand bottom
+      { x: iconX, y: iconY + iconHeight * 0.97 }
+    ];
+    
+    // Draw the polygon icon
+    g.fillStyle('#bfffff');
+    g.circuit(points).fillAndStroke();
+  },
+  interaction: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the interaction icon (two half-circles with a gap)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 2;
+    const iconY = y + 12;
+    
+    // Calculate dimensions for the half-circles
+    const radius = iconHeight/2 - 2;
+    const centerY = iconY + iconHeight/2;
+    
+    // Draw left half-circle
+    g.fillStyle('#bfffff');
+    
+    // Create points for the left half-circle
+    const leftCenterX = iconX + radius;
+    const leftCenterY = centerY;
+    
+    // Generate points for the left half-circle
+    const leftHalfCirclePoints = [];
+    for (let i = 0; i <= 16; i++) {
+      const angle = Math.PI/2 + (Math.PI * i) / 16;
+      leftHalfCirclePoints.push({
+        x: leftCenterX + radius * Math.cos(angle),
+        y: leftCenterY + radius * Math.sin(angle)
+      });
+    }
+    
+    // Draw the left half-circle
+    g.path(leftHalfCirclePoints).fillAndStroke();
+    
+    // Add stroke for the left side of the gap
+    g.path([
+      {x: leftCenterX, y: leftCenterY - radius},
+      {x: leftCenterX, y: leftCenterY + radius}
+    ]).stroke();
+    
+    // Create points for the right half-circle - moved closer to the left half-circle
+    const gapSize = -14; // Smaller gap size
+    const rightCenterX = leftCenterX + radius * 2 + gapSize;
+    const rightCenterY = centerY;
+    
+    // Generate points for the right half-circle
+    const rightHalfCirclePoints = [];
+    for (let i = 0; i <= 16; i++) {
+      const angle = -Math.PI/2 + (Math.PI * i) / 16;
+      rightHalfCirclePoints.push({
+        x: rightCenterX + radius * Math.cos(angle),
+        y: rightCenterY + radius * Math.sin(angle)
+      });
+    }
+    
+    // Draw the right half-circle
+    g.path(rightHalfCirclePoints).fillAndStroke();
+    
+    // Add stroke for the right side of the gap
+    g.path([
+      {x: rightCenterX, y: rightCenterY - radius},
+      {x: rightCenterX, y: rightCenterY + radius}
+    ]).stroke();
+  },
+  event: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the event icon (notched rectangle with right semicircle)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Create points for the event icon
+    g.fillStyle('#bfffff');
+    
+    // Start with the notched rectangle part
+    const notchDepth = iconHeight * 0.25;
+    const rectWidth = iconWidth * 0.7;
+    
+    const points = [
+      { x: iconX, y: iconY }, // Start at top-left
+      { x: iconX + rectWidth, y: iconY }, // Top edge
+    ];
+    
+    // Add points for the right semicircle
+    const radius = iconHeight / 2;
+    for (let i = 0; i <= 16; i++) {
+      const angle = (-Math.PI/2) + (Math.PI * i) / 16;
+      points.push({
+        x: iconX + rectWidth + Math.cos(angle) * radius,
+        y: iconY + iconHeight/2 + Math.sin(angle) * radius
+      });
+    }
+    
+    // Complete the shape
+    points.push(
+      { x: iconX + rectWidth, y: iconY + iconHeight }, // Bottom-right
+      { x: iconX, y: iconY + iconHeight }, // Bottom-left
+      { x: iconX + notchDepth, y: iconY + iconHeight/2 }, // Notch point
+      { x: iconX, y: iconY } // Back to start
+    );
+    
+    // Draw the event icon
+    g.circuit(points).fillAndStroke();
+  },
+  service: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the service icon (pill shape - fully rounded rectangle)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Draw the pill shape
+    g.fillStyle('#bfffff');
+    g.roundRect(iconX, iconY, iconWidth, iconHeight, iconHeight/2).fillAndStroke();
+  },
+  data: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the data icon (rectangle with header separator)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Draw the main rectangle of the icon
     g.fillStyle('#bfffff');
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
-    // Draw the "plug" or "socket" icon
-    // This is a simplified representation of an interface
-    const plugWidth = 20 * 0.6;
-    const plugHeight = 30 * 0.6;
-    const plugX = iconX + (iconWidth - plugWidth) / 2;
-    const plugY = iconY + (iconHeight - plugHeight) / 2;
-    
-    // Draw the plug body
-    g.fillStyle('#bfffff');
-    g.rect(plugX, plugY, plugWidth, plugHeight).fillAndStroke();
-    
-    // Draw the plug pins (3 horizontal lines)
-    const pinWidth = plugWidth * 0.8;
-    const pinHeight = 2 * 0.6;
-    const pinX = plugX + (plugWidth - pinWidth) / 2;
-    const pinSpacing = plugHeight / 4;
-    
-    for (let i = 1; i <= 3; i++) {
-      const pinY = plugY + i * pinSpacing - pinHeight / 2;
-      g.fillStyle('#000000');
-      g.rect(pinX, pinY, pinWidth, pinHeight).fillAndStroke();
-    }
+    // Draw the header separator line about 1/3 from the top
+    const headerHeight = iconHeight * 0.35;
+    g.path([
+      { x: iconX, y: iconY + headerHeight },
+      { x: iconX + iconWidth, y: iconY + headerHeight }
+    ]).stroke();
   }
 }
 

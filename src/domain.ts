@@ -67,6 +67,12 @@ export type Visual =
   | 'sync'
   | 'table'
   | 'transceiver'
+  | 'collaboration'
+  | 'function'
+  | 'interaction'
+  | 'event'
+  | 'service'
+  | 'data'
 
 export interface TextStyle {
   bold: boolean

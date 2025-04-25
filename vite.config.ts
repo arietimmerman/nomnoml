@@ -28,6 +28,6 @@ export default defineConfig({
     devSourcemap: true,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
+    include: ['react', 'react-dom', 'dagre'],
   }
 }) 

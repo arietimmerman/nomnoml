@@ -1,7 +1,7 @@
 import { Config, Measurer, RelationLabel, Style } from './domain'
 import { indexBy } from './util'
 import { Vec } from './vector'
-import { layout as grapheLayout, graphlib } from 'graphre'
+import * as dagre from 'dagre'
 import { layouters, styles } from './visuals'
 import { EdgeLabel, GraphLabel, GraphNode } from 'graphre/decl/types'
 import { Part, Node, Association } from './parser'
@@ -69,17 +69,15 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
     for (let i = 0; i < layoutedAssoc.length; i++) layoutedAssoc[i].id = `${i}`
     for (const e of layoutedNodes) layoutNode(e, styledConfig)
 
-    const g = new graphlib.Graph<GraphLabel, GraphNode, EdgeLabel>({
+    const g = new dagre.graphlib.Graph({
       multigraph: true,
+      directed: true
     })
     g.setGraph({
       rankdir: style.direction || config.direction,
-      //align: //undefined [UL, UR, DL, DR]
-      nodesep: config.spacing, //50
-      edgesep: config.spacing, //10
-      ranksep: config.spacing, //50
-      //marginx: //0
-      //marginy: //0
+      nodesep: config.spacing,
+      edgesep: config.spacing,
+      ranksep: config.spacing,
       acyclicer: config.acyclicer,
       ranker: config.ranker,
     })
@@ -95,14 +93,16 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
         g.setEdge(r.start, r.end, {}, r.id)
       }
     }
-    grapheLayout(g)
+    dagre.layout(g)
 
     const rels = indexBy(c.assocs as LayoutedAssoc[], 'id')
     const nodes = indexBy(c.nodes as LayoutedNode[], 'id')
     for (const name of g.nodes()) {
       const node = g.node(name)
-      nodes[name].x = node.x!
-      nodes[name].y = node.y!
+      if (node && typeof node.x === 'number' && typeof node.y === 'number') {
+        nodes[name].x = node.x
+        nodes[name].y = node.y
+      }
     }
     let left = 0
     let right = 0
@@ -113,33 +113,49 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
       const edge = g.edge(edgeObj)
       const start = nodes[edgeObj.v]
       const end = nodes[edgeObj.w]
-      const rel = rels[edgeObj.name!]
-      rel.path = [start, ...edge.points!, end].map(toPoint)
+      const rel = rels[edgeObj.name]
+      if (edge && edge.points) {
+        rel.path = [start, ...edge.points, end].map(toPoint)
 
-      const startP = rel.path[1]
-      const endP = rel.path[rel.path.length - 2]
-      layoutLabel(rel.startLabel, startP, adjustQuadrant(quadrant(startP, start) ?? 4, start, end))
-      layoutLabel(rel.endLabel, endP, adjustQuadrant(quadrant(endP, end) ?? 2, end, start))
-      left = Math.min(
-        left,
-        rel.startLabel.x!,
-        rel.endLabel.x!,
-        ...edge.points!.map((e) => e.x),
-        ...edge.points!.map((e) => e.x)
-      )
-      right = Math.max(
-        right,
-        rel.startLabel.x! + rel.startLabel.width!,
-        rel.endLabel.x! + rel.endLabel.width!,
-        ...edge.points!.map((e) => e.x)
-      )
-      top = Math.min(top, rel.startLabel.y!, rel.endLabel.y!, ...edge.points!.map((e) => e.y))
-      bottom = Math.max(
-        bottom,
-        rel.startLabel.y! + rel.startLabel.height!,
-        rel.endLabel.y! + rel.endLabel.height!,
-        ...edge.points!.map((e) => e.y)
-      )
+        const startP = rel.path[1]
+        const endP = rel.path[rel.path.length - 2]
+        layoutLabel(rel.startLabel, startP, adjustQuadrant(quadrant(startP, start) ?? 4, start, end))
+        layoutLabel(rel.endLabel, endP, adjustQuadrant(quadrant(endP, end) ?? 2, end, start))
+        
+        const startLabelX = rel.startLabel.x ?? 0
+        const startLabelY = rel.startLabel.y ?? 0
+        const startLabelWidth = rel.startLabel.width ?? 0
+        const startLabelHeight = rel.startLabel.height ?? 0
+        const endLabelX = rel.endLabel.x ?? 0
+        const endLabelY = rel.endLabel.y ?? 0
+        const endLabelWidth = rel.endLabel.width ?? 0
+        const endLabelHeight = rel.endLabel.height ?? 0
+
+        left = Math.min(
+          left,
+          startLabelX,
+          endLabelX,
+          ...edge.points.map((e: Vec) => e.x)
+        )
+        right = Math.max(
+          right,
+          startLabelX + startLabelWidth,
+          endLabelX + endLabelWidth,
+          ...edge.points.map((e: Vec) => e.x)
+        )
+        top = Math.min(
+          top,
+          startLabelY,
+          endLabelY,
+          ...edge.points.map((e: Vec) => e.y)
+        )
+        bottom = Math.max(
+          bottom,
+          startLabelY + startLabelHeight,
+          endLabelY + endLabelHeight,
+          ...edge.points.map((e: Vec) => e.y)
+        )
+      }
     }
     const graph = g.graph()
     const width = Math.max(graph.width! + (left < 0 ? -left : 0), right - left)
