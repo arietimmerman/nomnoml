@@ -3,23 +3,16 @@
 layout: home
 
 hero:
-  name: "Archimate"
-  text: "Archimate from Text"
-  tagline: My great project tagline
+  name: "ArchiTEXT"
+  text: "Text to Archimate diagram in seconds."
+  tagline: A modern language that turns text to archimate
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Diagram Examples
+      link: /examples
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Guide
+      link: /guide
 
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 

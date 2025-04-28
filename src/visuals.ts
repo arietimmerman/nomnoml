@@ -59,6 +59,7 @@ export const styles: { [key: string]: Style } = {
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
   interface:   buildStyle({ visual:'interface', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
   process:     buildStyle({ visual:'process', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
+  role:       buildStyle({ visual:'role' }, { center:true, italic:true }),
   collaboration: buildStyle(
     { visual: 'collaboration', fill: '#bfffff' },
     { center: true },
@@ -360,6 +361,7 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
   event: archimate,
   service: archimate,
   data: archimate,
+  role: archimate,
   application: function (config: Config, clas: LayoutedNode) {
     // Use the same layouter as component
     layouters.component(config, clas);
@@ -830,7 +832,68 @@ export const visualizers: { [key in Visual]: Visualizer } = {
   technology: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Use the same visualizer as component but with the technology style
     visualizers.component(node, x, y, config, g);
-  }
+  },
+  role: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (similar to other component types)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the role icon in the top right corner (cylinder/drum shape)
+    const iconWidth = 40;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 5;
+    const iconY = y + 8;
+    
+    // Set proportions to match the SVG example
+    // Keep the proportion between rx and ry similar to the SVG (51:90 ratio)
+    const ellipseRXRatio = 51/90;
+    const ellipseRY = iconHeight / 2;
+    const ellipseRX = ellipseRY * ellipseRXRatio;
+    
+    // Positions for the elements
+    const leftCenterX = iconX + ellipseRX;
+    const rightCenterX = iconX + iconWidth - ellipseRX;
+    const centerY = iconY + iconHeight / 2;
+    const rectWidth = rightCenterX - leftCenterX;
+    
+    // 1. Draw the middle rectangle (no stroke on sides)
+    g.fillStyle(config.fill[0]);
+    g.rect(leftCenterX, iconY, rectWidth, iconHeight).fill();
+    
+    // 2. Draw left half-ellipse
+    const leftArcPoints = [];
+    for (let i = 0; i <= 16; i++) {
+      const angle = Math.PI/2 + (Math.PI * i) / 16;
+      leftArcPoints.push({
+        x: leftCenterX + ellipseRX * Math.cos(angle),
+        y: centerY + ellipseRY * Math.sin(angle)
+      });
+    }
+    g.path(leftArcPoints).fillAndStroke();
+    
+    // 3. Draw right half-ellipse
+    const rightArcPoints = [];
+    for (let i = 0; i <= 32; i++) {
+      // Complete full ellipse on the right (0 to 2π)
+      const angle = (2 * Math.PI * i) / 32;
+      rightArcPoints.push({
+        x: rightCenterX + ellipseRX * Math.cos(angle),
+        y: centerY + ellipseRY * Math.sin(angle)
+      });
+    }
+    g.path(rightArcPoints).fillAndStroke();
+    
+    // 4. Draw top and bottom lines of the rectangle
+    g.path([
+      { x: leftCenterX, y: iconY },
+      { x: rightCenterX, y: iconY }
+    ]).stroke();
+    
+    g.path([
+      { x: leftCenterX, y: iconY + iconHeight },
+      { x: rightCenterX, y: iconY + iconHeight }
+    ]).stroke();
+  },
 }
 
 function handleEvent(e: MouseEvent | TouchEvent): void {

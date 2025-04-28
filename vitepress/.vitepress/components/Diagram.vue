@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, useSlots } from 'vue'
+import { ref, onMounted, onUnmounted, useSlots, defineProps } from 'vue'
 import { renderSvg } from '@nomnoml/nomnoml'
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
@@ -9,9 +9,29 @@ const editorContainer = ref(null)
 const slots = useSlots()
 let editor = null
 
+const props = defineProps({
+    direction: {
+        type: String,
+        default: undefined,
+        validator: (val) => !val || val === 'down' || val === 'right',
+    },
+    size: {
+        type: String,
+        default: 'medium',
+    },
+})
+
+function injectDirection(content, direction) {
+    if (!direction) return content
+    // Only inject if not already present
+    if (/^#direction:/m.test(content)) return content
+    return `#direction: ${direction}\n${content}`
+}
+
 const renderDiagram = (content) => {
     if (container.value) {
-        const svg = renderSvg(content)
+        const processed = injectDirection(content, props.direction)
+        const svg = renderSvg(processed)
         container.value.innerHTML = svg
     }
 }
@@ -47,7 +67,7 @@ onUnmounted(() => {
 <template>
     <div class="diagram-wrapper">
         <div ref="editorContainer" class="editor"></div>
-        <div class="diagram-container">
+        <div class="diagram-container" :class="`size-${props.size}`">
             <div ref="container"></div>
         </div>
     </div>
@@ -79,6 +99,16 @@ onUnmounted(() => {
 .diagram-container :deep(svg) {
     width: 100%;
     height: auto;
-    max-height: 500px;
 }
+
+.diagram-container.size-small :deep(svg) {
+    max-height: 200px;
+}
+.diagram-container.size-medium :deep(svg) {
+    max-height: 400px;
+}
+.diagram-container.size-large :deep(svg) {
+    max-height: 600px;
+}
+
 </style>
