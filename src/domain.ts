@@ -77,6 +77,8 @@ export type Visual =
   | 'business'
   | 'technology'
   | 'role'
+  | 'object'
+  | 'contract'
 
 export interface TextStyle {
   bold: boolean

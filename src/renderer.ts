@@ -104,9 +104,6 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     // If the node has a stylePrefix attribute, apply that style's fill color
     if (node.attr && node.attr.stylePrefix && config.styles[node.attr.stylePrefix]) {
       const prefixStyle = config.styles[node.attr.stylePrefix]
-      console.log('Type', node.type)
-      console.log('Has prefix style', prefixStyle)
-      console.log(prefixStyle.fill);
       // Only override the fill, keep the visual from the type
       style = {
         ...style,

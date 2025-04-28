@@ -59,6 +59,7 @@ export const styles: { [key: string]: Style } = {
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
   interface:   buildStyle({ visual:'interface', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
   process:     buildStyle({ visual:'process', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
+  contract:    buildStyle({ visual:'contract', fill: '#bfffff' }, { center:true, italic:true }, { center: true }),
   role:       buildStyle({ visual:'role' }, { center:true, italic:true }),
   collaboration: buildStyle(
     { visual: 'collaboration', fill: '#bfffff' },
@@ -92,6 +93,11 @@ export const styles: { [key: string]: Style } = {
   ),
   data: buildStyle(
     { visual: 'data', fill: '#bfffff' },
+    { center: true },
+    { center: true }
+  ),
+  object: buildStyle(
+    { visual: 'object', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
@@ -361,7 +367,9 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
   event: archimate,
   service: archimate,
   data: archimate,
+  object: archimate,
   role: archimate,
+  contract: archimate,
   application: function (config: Config, clas: LayoutedNode) {
     // Use the same layouter as component
     layouters.component(config, clas);
@@ -821,6 +829,10 @@ export const visualizers: { [key in Visual]: Visualizer } = {
       { x: iconX + iconWidth, y: iconY + headerHeight }
     ]).stroke();
   },
+  object: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // "object" is a synonym of "data"
+    visualizers.data(node, x, y, config, g);
+  },
   application: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Use the same visualizer as component but with the application style
     visualizers.component(node, x, y, config, g);
@@ -894,6 +906,38 @@ export const visualizers: { [key in Visual]: Visualizer } = {
       { x: rightCenterX, y: iconY + iconHeight }
     ]).stroke();
   },
+  contract: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rectangle based on the SVG example
+    g.roundRect(x, y, node.width, node.height, 0).fillAndStroke();
+    
+    // Draw the contract icon in the top right corner
+    const iconWidth = 40;
+    const iconHeight = 30;
+    const iconX = x + node.width - iconWidth - 5;
+    const iconY = y + 8;
+    
+    // Draw the contract icon (rectangle with two horizontal lines)
+    g.fillStyle(config.fill[0]);
+    g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
+    
+    // Calculate positions for the two horizontal divider lines inside the icon
+    // Using the same proportions as the SVG (60/188 and 128/188)
+    const firstLineYIcon = iconY + iconHeight * (60/188);
+    const secondLineYIcon = iconY + iconHeight * (128/188);
+    
+    // Draw the two horizontal divider lines inside the icon
+    g.path([
+      { x: iconX, y: firstLineYIcon },
+      { x: iconX + iconWidth, y: firstLineYIcon }
+    ]).stroke();
+    
+    g.path([
+      { x: iconX, y: secondLineYIcon },
+      { x: iconX + iconWidth, y: secondLineYIcon }
+    ]).stroke();
+    
+   
+  }
 }
 
 function handleEvent(e: MouseEvent | TouchEvent): void {

@@ -1,6 +1,5 @@
 <script setup>
 import Diagram from '../.vitepress/components/Diagram.vue'
-
 </script>
 
 # Relationship

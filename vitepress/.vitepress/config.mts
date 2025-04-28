@@ -37,16 +37,6 @@ export default defineConfig({
             { text: 'Elements', link: '/guide/elements' }
           ]
         }
-      ],
-      // Sidebar for other pages (e.g., root, examples)
-      '/': [
-        {
-          text: 'Examples',
-          items: [
-            { text: 'Markdown Examples', link: '/markdown-examples' },
-            { text: 'Runtime API Examples', link: '/api-examples' }
-          ]
-        }
       ]
     },
 
