@@ -103,12 +103,18 @@ export function parse(source: string): ParsedDiagram {
       { center: true, bold: true },
       { center: true }
     )
+
+    userStyles['technlogy'] = buildStyle(
+      { visual: 'component', fill: '#00ff00' }, // Light yellow color
+      { center: true, bold: true },
+      { center: true }
+    )
     
     return {
       arrowSize: +d.arrowSize || 1,
       bendSize: +d.bendSize || 0.3,
       direction: directionToDagre(d.direction),
-      gutter: +d.gutter || 20,
+      gutter: +d.gutter || 0,
       edgeMargin: +d.edgeMargin || 0,
       gravity: Math.round(+(d.gravity ?? 1)),
       edges: d.edges == 'hard' ? 'hard' : 'rounded',

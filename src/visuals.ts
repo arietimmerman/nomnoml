@@ -832,6 +832,10 @@ export const visualizers: { [key in Visual]: Visualizer } = {
   business: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Use the same visualizer as component but with the business style
     visualizers.component(node, x, y, config, g);
+  },
+  technology: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Use the same visualizer as component but with the technology style
+    visualizers.component(node, x, y, config, g);
   }
 }
 

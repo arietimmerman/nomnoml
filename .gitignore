@@ -13,3 +13,4 @@ cache/
 output.*
 
 .vercel
+vitepress/.vitepress/dist/

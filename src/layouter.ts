@@ -172,7 +172,7 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
     // For compartments with children, add extra padding to ensure text stays within the box
     if (hasChildren) {
       // Add extra padding at the bottom for text
-      const extraPadding = config.padding * 3
+      const extraPadding = 0 //config.padding * 3
       part.height = textSize.height + graphHeight + config.padding + extraPadding
     } else {
       part.height = textSize.height + graphHeight + config.padding

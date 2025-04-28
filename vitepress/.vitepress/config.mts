@@ -1,0 +1,43 @@
+import { defineConfig } from 'vitepress'
+import { fileURLToPath, URL } from 'node:url'
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+  title: "Archimate",
+  description: "Archimate from Text",
+  vite: {
+    resolve: {
+      alias: {
+        '@nomnoml': fileURLToPath(new URL('../../src', import.meta.url))
+      }
+    }
+  },
+  vue: {
+    template: {
+      compilerOptions: {
+        whitespace: 'preserve'
+      }
+    }
+  },
+  themeConfig: {
+    // https://vitepress.dev/reference/default-theme-config
+    nav: [
+      { text: 'Home', link: '/' },
+      { text: 'Examples', link: '/markdown-examples' }
+    ],
+
+    sidebar: [
+      {
+        text: 'Examples',
+        items: [
+          { text: 'Markdown Examples', link: '/markdown-examples' },
+          { text: 'Runtime API Examples', link: '/api-examples' }
+        ]
+      }
+    ],
+
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+    ]
+  }
+})

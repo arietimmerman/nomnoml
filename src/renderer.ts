@@ -26,18 +26,18 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     if (hasChildren) {
       // For compartments with children, render text at the bottom
       const lineHeight = config.fontSize * config.leading
-      // Add extra padding at the bottom to ensure text stays within the box
-      const bottomPadding = config.padding * 2
+      // Remove extra padding at the bottom
+      const bottomPadding = config.padding
       
       for (let i = 0; i < compartment.lines.length; i++) {
         const text = compartment.lines[i]
         g.textAlign(style.center ? 'center' : 'left')
         const x = style.center ? compartment.width! / 2 - config.padding : 0
-        // Position text higher within the box by using a larger bottom padding
+        // Position text higher within the box by using a smaller bottom padding
         let y = compartment.height! - bottomPadding - (compartment.lines.length - 1 - i) * lineHeight
         
         if (text) {
-          g.fillText(text, x, y-40)
+          g.fillText(text, x, y)
         }
         if (style.underline) {
           const w = g.measureText(text).width

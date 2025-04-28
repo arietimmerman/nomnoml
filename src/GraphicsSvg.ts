@@ -22,9 +22,10 @@ interface SvgAttr {
 type SvgRootAttr = SvgAttr & {
   version?: string
   baseProfile?: string
-  width?: number
-  height?: number
+  width?: number | string
+  height?: number | string
   viewBox?: string
+  preserveAspectRatio?: string
   xmlns?: string
   'xmlns:xlink'?: string
   'xmlns:ev'?: string
@@ -342,9 +343,10 @@ export function GraphicsSvg(document?: HTMLDocument): ISvgGraphics {
       root.attr = {
         version: '1.1',
         baseProfile: 'full',
-        width: size.width,
-        height: size.height,
+        width: '100%',
+        height: '100%',
         viewBox: '0 0 ' + size.width + ' ' + size.height,
+        preserveAspectRatio: 'xMidYMid meet',
         xmlns: 'http://www.w3.org/2000/svg',
         'xmlns:xlink': 'http://www.w3.org/1999/xlink',
         'xmlns:ev': 'http://www.w3.org/2001/xml-events',

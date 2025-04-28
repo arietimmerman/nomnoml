@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@codemirror/state": "^6.5.2",
+    "codemirror": "^6.0.1"
+  }
+}
