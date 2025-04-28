@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, useSlots, defineProps } from 'vue'
+import { ref, onMounted, onUnmounted, useSlots, defineProps, watch } from 'vue'
 import { renderSvg } from '@nomnoml/nomnoml'
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
@@ -19,6 +19,10 @@ const props = defineProps({
     size: {
         type: String,
         default: 'medium',
+    },
+    fullPage: {
+        type: Boolean,
+        default: false,
     },
 })
 
@@ -92,8 +96,29 @@ onMounted(() => {
         }),
         parent: editorContainer.value
     })
+    
+    // Apply full-page specific styling if needed
+    if (props.fullPage) {
+        editorContainer.value.classList.add('full-page-editor')
+    }
 
     renderDiagram(diagramContent)
+})
+
+// Watch for changes to the fullPage prop
+watch(() => props.fullPage, (newValue) => {
+    if (editorContainer.value) {
+        if (newValue) {
+            editorContainer.value.classList.add('full-page-editor')
+        } else {
+            editorContainer.value.classList.remove('full-page-editor')
+        }
+    }
+    
+    // Force redraw to adjust layout
+    if (editor) {
+        editor.requestMeasure()
+    }
 })
 
 onUnmounted(() => {
@@ -102,7 +127,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="diagram-wrapper">
+    <div class="diagram-wrapper" :class="{ 'full-page': props.fullPage }">
         <div ref="editorContainer" class="editor"></div>
         <div class="diagram-container" :class="`size-${props.size}`">
             <div ref="container"></div>
@@ -115,6 +140,23 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+.diagram-wrapper.full-page {
+    flex-direction: row;
+    height: calc(100vh - 100px); /* Adjust height as needed, leaving space for header/footer */
+}
+
+.full-page .editor,
+.full-page .diagram-container {
+    width: 50%;
+    height: 100%;
+    overflow: auto;
+}
+
+.full-page .editor :deep(.cm-editor) {
+    height: 100%;
+    max-height: 100%;
 }
 
 .editor :deep(.cm-editor) {
@@ -161,6 +203,14 @@ onUnmounted(() => {
     background-color: #f5f5f5;
     border-radius: 8px;
     margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.full-page .diagram-container {
+    margin: 0;
+    padding: 16px;
 }
 
 .diagram-container :deep(svg) {
@@ -177,5 +227,26 @@ onUnmounted(() => {
 .diagram-container.size-large :deep(svg) {
     max-height: 600px;
 }
+body .full-page.size-large.diagram-container :deep(svg) {
+    max-height: 1000px!important;
+}
 
+/* Full-page responsive adjustments */
+@media (max-width: 768px) {
+    .diagram-wrapper.full-page {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .full-page .editor,
+    .full-page .diagram-container {
+        width: 100%;
+        height: auto;
+    }
+    
+    .full-page .editor :deep(.cm-editor) {
+        min-height: calc(5em * 1.5);
+        max-height: calc(15em * 1.5);
+    }
+}
 </style>
