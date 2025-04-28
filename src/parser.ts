@@ -104,8 +104,8 @@ export function parse(source: string): ParsedDiagram {
       { center: true }
     )
 
-    userStyles['technlogy'] = buildStyle(
-      { visual: 'component', fill: '#00ff00' }, // Light yellow color
+    userStyles['technology'] = buildStyle(
+      { visual: 'component', fill: '#afffaf' }, // Light green color
       { center: true, bold: true },
       { center: true }
     )

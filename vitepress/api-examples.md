@@ -12,15 +12,8 @@ import Diagram from './.vitepress/components/Diagram.vue'
 Relationships are depicted with `->`. For example.
 
 <Diagram>#direction: right
-[test] -> [asbas]</Diagram>
+[&lt;technology:process&gt; test]</Diagram>
 
 asdgsad
 Blaat
 
-
-# Realization
-
-Relationships are depicted with `->`. For example.
-
-<Diagram>#direction: right
-[test] -:> [asbas]</Diagram>

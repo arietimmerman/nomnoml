@@ -104,7 +104,10 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     // If the node has a stylePrefix attribute, apply that style's fill color
     if (node.attr && node.attr.stylePrefix && config.styles[node.attr.stylePrefix]) {
       const prefixStyle = config.styles[node.attr.stylePrefix]
-      // Create a new style object with the prefix style's fill color
+      console.log('Type', node.type)
+      console.log('Has prefix style', prefixStyle)
+      console.log(prefixStyle.fill);
+      // Only override the fill, keep the visual from the type
       style = {
         ...style,
         fill: prefixStyle.fill
@@ -116,17 +119,21 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     g.setData('compartment', undefined)
 
     g.save()
-    g.fillStyle(style.fill || config.fill[level] || last(config.fill))
+    console.log('Style', style)
+    
     g.strokeStyle(style.stroke || config.stroke)
     if (style.dashed) {
       const dash = Math.max(4, 2 * config.lineWidth)
       g.setLineDash([dash, dash])
     }
+    
     const drawNode = visualizers[style.visual] || visualizers.class
     drawNode(node, x, y, config, g)
+    g.fillStyle(style.fill || config.fill[level] || last(config.fill))
     for (const divider of node.dividers!) {
       g.path(divider.map((e) => add(e, { x, y }))).stroke()
     }
+    
     g.restore()
 
     let partIndex = 0
@@ -141,6 +148,7 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
         textStyle.bold ? 'bold' : 'normal',
         textStyle.italic ? 'italic' : 'normal'
       )
+      
       renderCompartment(part, style.stroke, textStyle, level + 1)
       partIndex++
       g.restore()

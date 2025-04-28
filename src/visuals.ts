@@ -175,23 +175,7 @@ function labelledIcon(config: Config, clas: LayoutedNode) {
 }
 
 export const layouters: { [key in Visual]: NodeLayouter } = {
-  actor: function (config: Config, clas: LayoutedNode) {
-    clas.width = Math.max(config.padding * 2, ...clas.parts.map((e) => e.width ?? 0))
-    clas.height = config.padding * 3 + sum(clas.parts, (e) => e.height ?? 0)
-    clas.dividers = []
-    let y = config.padding * 3
-    for (const comp of clas.parts) {
-      comp.x = 0
-      comp.y = y
-      comp.width = clas.width
-      y += comp.height ?? 0
-      if (comp != last(clas.parts))
-        clas.dividers.push([
-          { x: config.padding, y: y },
-          { x: clas.width - config.padding, y: y },
-        ])
-    }
-  },
+  actor: archimate,
   class: box,
   database: function (config: Config, clas: LayoutedNode) {
     clas.width = Math.max(...clas.parts.map((e) => e.width ?? 0))
@@ -392,23 +376,35 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
 
 export const visualizers: { [key in Visual]: Visualizer } = {
   actor: function (node, x, y, config, g) {
-    const a = config.padding / 2
-    const yp = y + a * 4
-    const faceCenter = { x: node.x, y: yp - a }
-    g.circle(faceCenter, a).fillAndStroke()
+    // Draw the main rounded rectangle
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the actor icon in the top right corner
+    const iconWidth = 20; // Reduced from 25
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 5;
+    
+    // Draw stick figure
+    const a = 6; // Reduced from 8 to make figure smaller
+    const yp = iconY + a * 1.5;
+    const faceCenter = { x: iconX + iconWidth/2, y: yp };
+    
+    // Draw the actor figure
+    g.circle(faceCenter, a/1.5).fillAndStroke();
     g.path([
-      { x: node.x, y: yp },
-      { x: node.x, y: yp + 2 * a },
-    ]).stroke()
+      { x: iconX + iconWidth/2, y: yp + a },
+      { x: iconX + iconWidth/2, y: yp + 2.5 * a },
+    ]).stroke();
     g.path([
-      { x: node.x - a, y: yp + a },
-      { x: node.x + a, y: yp + a },
-    ]).stroke()
+      { x: iconX + iconWidth/2 - a, y: yp + 1.5 * a },
+      { x: iconX + iconWidth/2 + a, y: yp + 1.5 * a },
+    ]).stroke();
     g.path([
-      { x: node.x - a, y: yp + a + config.padding },
-      { x: node.x, y: yp + config.padding },
-      { x: node.x + a, y: yp + a + config.padding },
-    ]).stroke()
+      { x: iconX + iconWidth/2 - a, y: yp + 3.5 * a },
+      { x: iconX + iconWidth/2, y: yp + 2.5 * a },
+      { x: iconX + iconWidth/2 + a, y: yp + 3.5 * a },
+    ]).stroke();
   },
   class: function (node, x, y, config, g) {
     g.rect(x, y, node.width, node.height).fillAndStroke()
@@ -605,7 +601,6 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the arrow icon
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circuit(points).fillAndStroke();
   },
   interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -620,7 +615,6 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw circle for interface
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
     g.circle({x: iconX + iconWidth/2, y: iconY + iconHeight/2}, iconWidth/2 - 2).fillAndStroke();
     
     // Draw a line extending to the left (the interface connection)
@@ -644,7 +638,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const circleRadius = iconHeight/2 - 2;
     
     // Draw two overlapping circles
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     g.circle({x: iconX + circleRadius + 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
     g.circle({x: iconX + iconWidth - circleRadius - 2, y: iconY + iconHeight/2}, circleRadius).fillAndStroke();
   },
@@ -676,7 +670,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     ];
     
     // Draw the polygon icon
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     g.circuit(points).fillAndStroke();
   },
   interaction: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -695,7 +689,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const centerY = iconY + iconHeight/2;
     
     // Draw left half-circle
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     
     // Create points for the left half-circle
     const leftCenterX = iconX + radius;
@@ -756,7 +750,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Create points for the event icon
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     
     // Start with the notched rectangle part
     const notchDepth = iconHeight * 0.25;
@@ -800,7 +794,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the pill shape
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     g.roundRect(iconX, iconY, iconWidth, iconHeight, iconHeight/2).fillAndStroke();
   },
   data: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
@@ -815,7 +809,7 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     const iconY = y + 12;
     
     // Draw the main rectangle of the icon
-    g.fillStyle('rgba(0, 0, 0, 0.0)');
+    
     g.rect(iconX, iconY, iconWidth, iconHeight).fillAndStroke();
     
     // Draw the header separator line about 1/3 from the top
