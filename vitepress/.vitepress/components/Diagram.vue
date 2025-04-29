@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, useSlots, defineProps, watch } from 'vue'
-import { renderSvg } from '@nomnoml/nomnoml'
+import { renderSvgAdvanced, parse } from '@nomnoml/nomnoml'
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState } from '@codemirror/state'
-import { nomnoml, errorField, addErrorEffect } from './nomnomlMode'
+import { nomnoml, errorField, addErrorEffect, cachedComponentsEffect } from './nomnomlMode'
 
 // Constants for zoom control
 const ZOOM_STEP = 0.1
@@ -67,7 +67,32 @@ const highlightError = (line, column) => {
   })
 }
 
-// Render the diagram with the given content or from the editor
+// Function to extract components from text
+function getExistingComponents(layoutNode) {
+  try {
+  
+  const components = new Set();
+  
+  function traverseAST(node) {
+    const id = node.id;
+    if (id) {
+      components.add(id);
+    }
+  
+    if (node.children) {
+      node.children.forEach(traverseAST);
+    }
+  }
+
+    layoutNode.nodes.forEach(traverseAST);
+  
+    console.log(components)
+    return Array.from(components);
+  } catch (e) {
+    return [];
+  }
+}
+
 const renderDiagram = (content = null) => {
   if (!container.value) return
   
@@ -78,11 +103,23 @@ const renderDiagram = (content = null) => {
     // If no content is provided, use the editor content
     const source = content || (editor ? editor.state.doc.toString() : '')
     
+    
+    
     // Render the diagram as SVG
     const processed = injectDirection(source, props.direction)
-    const svg = renderSvg(processed)
+    let r = renderSvgAdvanced(processed)
+    const svg = r.svg
     container.value.innerHTML = svg
     lastValidSource = source
+    
+    // Cache the valid components
+    // Try to extract components before rendering
+    const components = getExistingComponents(r.layout)
+    if (editor) {
+      editor.dispatch({
+        effects: cachedComponentsEffect.of(components)
+      })
+    }
     
     // Update the transform
     updateDiagramTransform()

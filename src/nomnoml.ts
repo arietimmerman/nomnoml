@@ -1,6 +1,6 @@
 import type { Config, Measurer } from './domain'
 import { Graphics } from './Graphics'
-import { layout } from './layouter'
+import { layout, LayoutedPart } from './layouter'
 import { parse } from './parser'
 import { render } from './renderer'
 import { GraphicsCanvas } from './GraphicsCanvas'
@@ -35,6 +35,8 @@ function createMeasurer(config: Config, graphics: Graphics): Measurer {
   }
 }
 
+export { parse }
+
 function parseAndRender(
   code: string,
   graphics: Graphics,
@@ -57,17 +59,31 @@ export function draw(canvas: HTMLCanvasElement, code: string, scale?: number): {
   return parseAndRender(code, GraphicsCanvas(canvas), canvas, scale || 1)
 }
 
-export function renderSvg(code: string, document?: HTMLDocument): string {
+export function renderSvgAdvanced(
+  code: string,
+  document?: HTMLDocument
+): { svg: string; layout: LayoutedPart } {
   const skCanvas = GraphicsSvg(document)
   const { config, layout } = parseAndRender(code, skCanvas, null, 1)
-  return skCanvas.serialize(
-    {
-      width: layout.width!,
-      height: layout.height!,
-    },
-    code,
-    config.title
-  )
+  return {
+    svg: skCanvas.serialize(
+      {
+        width: layout.width!,
+        height: layout.height!,
+      },
+      code,
+      config.title
+    ),
+    layout: layout,
+  }
+}
+
+export function renderSvg(
+  code: string,
+  document?: HTMLDocument
+): string {
+  let r = renderSvgAdvanced(code, document)
+  return r.svg
 }
 
 export class ImportDepthError extends Error {

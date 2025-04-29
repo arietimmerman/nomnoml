@@ -57,10 +57,14 @@ export const styles: { [key: string]: Style } = {
   table:       buildStyle({ visual:'table' }, { center:true, bold:true }),
   transceiver: buildStyle({ visual:'transceiver' }, {}),
   usecase:     buildStyle({ visual:'ellipse' }, { center:true }, { center: true }),
-  interface:   buildStyle({ visual:'interface', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
-  process:     buildStyle({ visual:'process', fill: '#bfffff' }, { center:true, bold:true }, { center: true }),
-  contract:    buildStyle({ visual:'contract', fill: '#bfffff' }, { center:true, italic:true }, { center: true }),
-  role:       buildStyle({ visual:'role' }, { center:true, italic:true }),
+  interface:   buildStyle({ visual:'interface', fill: '#bfffff' }, { center:true }, { center: true }),
+  process:     buildStyle({ visual:'process', fill: '#bfffff' }, { center:true }, { center: true }),
+  device:      buildStyle({ visual:'device', fill: '#bfffff' }, { center:true }, { center: true }),
+  communication_network: buildStyle({ visual:'communication_network', fill: '#bfffff' }, { center:true }, { center: true }),
+  system_software: buildStyle({ visual:'system_software', fill: '#bfffff' }, { center:true }, { center: true }),
+  artifact:    buildStyle({ visual:'artifact', fill: '#bfffff' }, { center:true }, { center: true }),
+  contract:    buildStyle({ visual:'contract', fill: '#bfffff' }, { center:true }, { center: true }),
+  role:        buildStyle({ visual:'role' }, { center:true }),
   collaboration: buildStyle(
     { visual: 'collaboration', fill: '#bfffff' },
     { center: true },
@@ -78,6 +82,11 @@ export const styles: { [key: string]: Style } = {
   ),
   interaction: buildStyle(
     { visual: 'interaction', fill: '#bfffff' },
+    { center: true },
+    { center: true }
+  ),
+  node: buildStyle(
+    { visual: 'node', fill: '#bfffff' },
     { center: true },
     { center: true }
   ),
@@ -103,17 +112,17 @@ export const styles: { [key: string]: Style } = {
   ),
   application: buildStyle(
     { visual: 'component', fill: '#dae8fc' },
-    { center: true, bold: true },
+    { center: true },
     { center: true }
   ),
   business: buildStyle(
     { visual: 'component', fill: '#fff2cc' },
-    { center: true, bold: true },
+    { center: true },
     { center: true }
   ),
   technology: buildStyle(
     { visual: 'component', fill: '#afffaf' },
-    { center: true, bold: true },
+    { center: true },
     { center: true }
   ),
 }
@@ -361,9 +370,14 @@ export const layouters: { [key in Visual]: NodeLayouter } = {
   component: archimate,
   interface: archimate,
   process: archimate,
+  device: archimate,
+  communication_network: archimate,
+  system_software: archimate,
+  artifact: archimate,
   collaboration: archimate,
   function: archimate,
   interaction: archimate,
+  node: archimate,
   event: archimate,
   service: archimate,
   data: archimate,
@@ -581,6 +595,40 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     g.rect(iconX - 6, iconY + 3, 12, 7).fillAndStroke();
     g.rect(iconX - 6, iconY + 13, 12, 7).fillAndStroke();
   },
+  device: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // here the device visual
+    
+    // Draw the main rounded rectangle (same as process)
+    const rx = 15;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+
+    // Device icon dimensions and position (80% of the original size)
+    const iconScale = 0.8;
+    const iconWidth = 30 * iconScale;
+    const iconHeight = 20 * iconScale;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 10;
+
+    // Draw the device body (rounded rectangle)
+    g.roundRect(iconX, iconY, iconWidth, iconHeight, (rx / 2) * iconScale).fillAndStroke();
+
+    // Draw the device "feet" (bottom path)
+    const footHeight = 9 * iconScale;
+    const footOffset = 7.5 * iconScale;
+    const footLeftX = iconX + footOffset;
+    const footRightX = iconX + iconWidth - footOffset;
+    const footY = iconY + iconHeight;
+    const footBottomY = footY + footHeight;
+
+    g.path([
+      { x: footLeftX, y: footY },
+      { x: iconX, y: footBottomY },
+      { x: iconX + iconWidth, y: footBottomY },
+      { x: footRightX, y: footY }
+    ]).fillAndStroke();
+
+    
+  },
   process: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Draw the main rounded rectangle (same as component)
     const rx = 10;
@@ -612,6 +660,71 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     
     // Draw the arrow icon
     g.circuit(points).fillAndStroke();
+  },
+  system_software: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the system software icon (two overlapping circles)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Calculate circle dimensions
+    const radius = iconHeight/2 - 2;
+    const centerY = iconY + iconHeight/2;
+    
+    // Draw two overlapping circles
+    // Left circle
+    const leftCenterX = iconX + radius + 2;
+    g.circle({x: leftCenterX, y: centerY}, radius).fillAndStroke();
+    
+    // Right circle
+    const rightCenterX = iconX + iconWidth - radius - 2;
+    g.circle({x: rightCenterX, y: centerY}, radius).fillAndStroke();
+  },
+  communication_network: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the network icon (parallelogram with connection points)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Calculate points for the parallelogram shape
+    const skewFactor = 0.4; // Controls the skew of the parallelogram
+    const points = [
+      { x: iconX, y: iconY + iconHeight }, // Bottom-left
+      { x: iconX + iconWidth * (1 - skewFactor), y: iconY + iconHeight }, // Bottom-right
+      { x: iconX + iconWidth, y: iconY }, // Top-right
+      { x: iconX + iconWidth * skewFactor, y: iconY }, // Top-left
+    ];
+    
+    // Draw the parallelogram outline
+    g.circuit(points).fillAndStroke();
+    
+    // Draw connection points (dots) at each corner
+    const dotRadius = 4;
+    const dots = [
+      { x: iconX + 2, y: iconY + iconHeight - 2 }, // Bottom-left
+      { x: iconX + iconWidth * (1 - skewFactor) - 2, y: iconY + iconHeight - 2 }, // Bottom-right
+      { x: iconX + iconWidth - 2, y: iconY + 2 }, // Top-right
+      { x: iconX + iconWidth * skewFactor + 2, y: iconY + 2 }, // Top-left
+    ];
+
+    // Draw each connection point as a filled black circle
+    dots.forEach(dot => {
+      g.fillStyle('#000000');
+      g.circle(dot, dotRadius).fill();
+      g.strokeStyle('#000000');
+      g.circle(dot, dotRadius).stroke();
+    });
+    
   },
   interface: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Draw the main rounded rectangle (same as component)
@@ -682,6 +795,86 @@ export const visualizers: { [key in Visual]: Visualizer } = {
     // Draw the polygon icon
     
     g.circuit(points).fillAndStroke();
+  },
+  artifact: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the artifact icon (document with folded corner)
+    const iconWidth = 20;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Calculate folded corner size (about 1/3 of the icon width)
+    const foldSize = iconWidth * 0.4;
+    
+    // Create points for the document shape with folded corner
+    const points = [
+      { x: iconX, y: iconY }, // Start at top-left
+      { x: iconX + iconWidth - foldSize, y: iconY }, // Top edge until fold
+      { x: iconX + iconWidth, y: iconY + foldSize }, // Fold diagonal
+      { x: iconX + iconWidth, y: iconY + iconHeight }, // Right edge
+      { x: iconX, y: iconY + iconHeight }, // Bottom edge
+      { x: iconX, y: iconY } // Back to start
+    ];
+    
+    // Draw the main document shape
+    g.fillStyle(config.fill[0]);
+    g.circuit(points).fillAndStroke();
+    
+    // Draw the folded corner triangle
+    const foldPoints = [
+      { x: iconX + iconWidth - foldSize, y: iconY },
+      { x: iconX + iconWidth - foldSize, y: iconY + foldSize },
+      { x: iconX + iconWidth, y: iconY + foldSize }
+    ];
+    
+    g.circuit(foldPoints).fillAndStroke();
+  },
+  node: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
+    // Draw the main rounded rectangle (same as component)
+    const rx = 3;
+    g.roundRect(x, y, node.width, node.height, rx).fillAndStroke();
+    
+    // Draw the node icon (3D box with perspective)
+    const iconWidth = 35;
+    const iconHeight = 25;
+    const iconX = x + node.width - iconWidth - 10;
+    const iconY = y + 12;
+    
+    // Calculate 3D effect measurements
+    const depth = 8; // The 3D depth effect
+    
+    // Draw the main face of the box
+    const mainFace = [
+      { x: iconX, y: iconY + depth }, // Top-left
+      { x: iconX + iconWidth - depth, y: iconY + depth }, // Top-right
+      { x: iconX + iconWidth - depth, y: iconY + iconHeight }, // Bottom-right
+      { x: iconX, y: iconY + iconHeight }, // Bottom-left
+      { x: iconX, y: iconY + depth } // Back to start
+    ];
+    g.circuit(mainFace).fillAndStroke();
+    
+    // Draw the top face (in perspective)
+    const topFace = [
+      { x: iconX, y: iconY + depth }, // Bottom-left
+      { x: iconX + iconWidth - depth, y: iconY + depth }, // Bottom-right
+      { x: iconX + iconWidth, y: iconY }, // Top-right
+      { x: iconX + depth, y: iconY }, // Top-left
+      { x: iconX, y: iconY + depth } // Back to start
+    ];
+    g.circuit(topFace).fillAndStroke();
+    
+    // Draw the right face (in perspective)
+    const rightFace = [
+      { x: iconX + iconWidth - depth, y: iconY + depth }, // Top-left
+      { x: iconX + iconWidth, y: iconY }, // Top-right
+      { x: iconX + iconWidth, y: iconY + iconHeight - depth }, // Bottom-right
+      { x: iconX + iconWidth - depth, y: iconY + iconHeight }, // Bottom-left
+    ];
+    g.circuit(rightFace).fillAndStroke();
   },
   interaction: (node: LayoutedNode, x: number, y: number, config: Config, g: Graphics) => {
     // Draw the main rounded rectangle (same as component)

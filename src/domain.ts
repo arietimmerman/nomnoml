@@ -79,6 +79,11 @@ export type Visual =
   | 'role'
   | 'object'
   | 'contract'
+  | 'artifact'
+  | 'communication_network'
+  | 'node'
+  | 'system_software'
+  | 'device'
 
 export interface TextStyle {
   bold: boolean

@@ -96,8 +96,10 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
       add(x(10), y(-4)),
       end,
     ]
+    g.save()
     g.fillStyle(isOpen ? config.stroke : config.fill[0])
     g.circuit(arrow).fillAndStroke()
+    g.restore()
   }
 
   function drawDiamond(nv: Vec, size: number, isOpen: boolean, end: Vec) {
@@ -119,13 +121,17 @@ export function drawTerminators(g: Graphics, config: Config, r: LayoutedAssoc) {
       add(x(10), y(-4)),
       end,
     ]
+    g.save()
     g.fillStyle(config.stroke)
     g.circuit(arrow).fillAndStroke()
+    g.restore()
   }
 
   function drawDot(nv: Vec, size: number, end: Vec) {
     const center = add(end, mult(nv, size * 4))
+    g.save()
     g.fillStyle(config.stroke)
     g.circle(center, size * 2).fillAndStroke()
+    g.restore()
   }
 }
