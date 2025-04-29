@@ -22,7 +22,8 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     // Check if this compartment has child nodes
     const hasChildren = compartment.nodes && compartment.nodes.length > 0
     
-    // Render text based on whether it has children or not
+    // If it has children, text should be position at the bottom
+    // Otherwise, it should be at the top
     if (hasChildren) {
       // For compartments with children, render text at the bottom
       const lineHeight = config.fontSize * config.leading
@@ -34,7 +35,7 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
         g.textAlign(style.center ? 'center' : 'left')
         const x = style.center ? compartment.width! / 2 - config.padding : 0
         // Position text higher within the box by using a smaller bottom padding
-        let y = compartment.height! - bottomPadding - (compartment.lines.length - 1 - i) * lineHeight
+        let y = compartment.height! - bottomPadding - (compartment.lines.length - 1 - i) * lineHeight - 50
         
         if (text) {
           g.fillText(text, x, y)
@@ -116,7 +117,6 @@ export function render(graphics: Graphics, config: Config, compartment: Layouted
     g.setData('compartment', undefined)
 
     g.save()
-    console.log('Style', style)
     
     g.strokeStyle(style.stroke || config.stroke)
     if (style.dashed) {

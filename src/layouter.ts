@@ -164,21 +164,22 @@ export function layout(measurer: Measurer, config: Config, ast: Part): LayoutedP
     const graphWidth = width ? width + 2 * config.gutter : 0
 
     const part = c as LayoutedPart
-    part.width = Math.max(textSize.width, graphWidth) + 2 * config.padding
-    
+    part.width = Math.max(textSize.width, graphWidth)
+
     // Check if this compartment has child nodes
     const hasChildren = c.nodes && c.nodes.length > 0
     
-    // For compartments with children, add extra padding to ensure text stays within the box
-    if (hasChildren) {
-      // Add extra padding at the bottom for text
-      const extraPadding = 0 //config.padding * 3
-      part.height = textSize.height + graphHeight + config.padding + extraPadding
-    } else {
-      part.height = textSize.height + graphHeight + config.padding
-    }
+    // Calculate padding based on whether there are children
+    const topPadding = hasChildren ? config.padding * 5 : config.padding
+    const bottomPadding = hasChildren ? config.padding * 4 : config.padding
+    const sidePadding = config.padding
     
-    part.offset = { x: config.padding - left, y: config.padding - top }
+    // When there are children, move text up by reducing the graphHeight gap
+    const textLiftAmount = hasChildren ? config.padding * 3 : 0
+    
+    part.width += 2 * sidePadding
+    part.height = textSize.height + (graphHeight - textLiftAmount) + topPadding + bottomPadding
+    part.offset = { x: sidePadding - left, y: topPadding - top - textLiftAmount }
   }
 
   function toPoint(o: Vec): Vec {
