@@ -42,6 +42,8 @@
     "tslib": "^2.8.1",
     "typescript": "^5.7.2",
     "vite": "^6.3.3",
+    "@codemirror/state": "^6.5.2",
+    "codemirror": "^6.0.1",
     "vitepress": "^1.6.3"
   },
   "scripts": {
@@ -50,7 +52,10 @@
     "checktypes": "tsc --noEmit -p src && tsc --noEmit -p webapp",
     "test": "node --test && npm run test_cli",
     "test_cli": "rm -f test/output.svg && node dist/nomnoml-cli.js test/import-test.nomnoml test/output.svg",
-    "dev": "vite --open dev.html"
+    "dev": "vite --open dev.html",
+    "docs:dev": "vitepress dev ./vitepress",
+    "docs:build": "vitepress build ./vitepress",
+    "docs:preview": "vitepress preview ./vitepress"
   },
   "repository": {
     "type": "git",
