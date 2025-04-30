@@ -6,7 +6,10 @@ export default defineConfig({
   title: "Architext",
   description: "Archimate from Text",
   appearance: false,
-    head: [
+  head: [
+    ['meta', { property: 'og:title', content: 'Architext - Text to Archimate diagrams in seconds' }],
+    ['meta', { property: 'og:description', content: 'An easy to use language for enterprise architects (and LLMs alike) that renders instant ArchiMate diagrams' }],
+    ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:image', content: '/architext-ogimage.png' }],
   ],
   vite: {
