@@ -67,12 +67,6 @@
     "vitepress": "^1.6.3"
   },
   "scripts": {
-    "prepare": "npm run build",
-    "build": "vite build && npm run test",
-    "checktypes": "tsc --noEmit -p src && tsc --noEmit -p webapp",
-    "test": "node --test && npm run test_cli",
-    "test_cli": "rm -f test/output.svg && node dist/nomnoml-cli.cjs test/import-test.nomnoml test/output.svg",
-    "dev": "vite --open dev.html",
     "docs:dev": "cd vitepress && vitepress dev",
     "docs:build": "cd vitepress && vitepress build",
     "docs:preview": "vitepress preview ./vitepress"
