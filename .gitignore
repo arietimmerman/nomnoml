@@ -14,3 +14,4 @@ output.*
 
 .vercel
 vitepress/.vitepress/dist/
+dist/
