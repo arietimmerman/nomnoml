@@ -5,6 +5,10 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   title: "Architext",
   description: "Archimate from Text",
+  appearance: false,
+    head: [
+    ['meta', { property: 'og:image', content: '/architext-ogimage.png' }],
+  ],
   vite: {
     resolve: {
       alias: {
@@ -39,10 +43,8 @@ export default defineConfig({
           ]
         }
       ]
-    },
+    }
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
-    ]
+    
   }
 })
