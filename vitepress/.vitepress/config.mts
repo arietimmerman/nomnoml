@@ -12,6 +12,12 @@ export default defineConfig({
     ['meta', { name: 'keywords', content: 'ArchiMate, enterprise architecture, diagram generator, architecture diagrams, system design, text to diagram, UML, documentation tool' }],
     ['meta', { name: 'author', content: 'Architext' }],
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }],
+    // Analytics
+    ['script', { 
+      defer: 'true', 
+      src: 'https://cloud.umami.is/script.js',
+      'data-website-id': 'fec552de-e560-4d06-af61-2ab85a89cb1f'
+    }],
     // OpenGraph tags
     ['meta', { property: 'og:title', content: 'Architext - Text to ArchiMate Diagrams in Seconds' }],
     ['meta', { property: 'og:description', content: 'Create professional ArchiMate diagrams from text instantly. Free online tool for enterprise architects, system designers, and documentation teams.' }],
