@@ -1,6 +1,0 @@
-{
-  "rewrites": [{ "source": "/image.svg", "destination": "/api/image" }],
-  "github": {
-    "silent": true
-  }
-}
